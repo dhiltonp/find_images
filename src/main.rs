@@ -94,19 +94,19 @@ fn main() {
     let args = Cli::from_args();
     if let Ok(file) = File::create(&args.output) {
         if let Ok(current_dir) = current_dir() {
-            println!("writing output to {:?} in {:?}", &args.output, current_dir);
+            eprintln!("writing output to {:?} in {:?}", &args.output, current_dir);
         }
         let mut file = LineWriter::new(file);
         for dir in args.dirs {
             if let Ok(dir) = canonicalize(&dir) {
                 process_dir(&dir, &mut file);
             } else {
-                println!("{:?} does not exist?", &dir);
+                eprintln!("{:?} does not exist?", &dir);
             }
         }
     } else {
         if let Ok(current_dir) = current_dir() {
-            println!("unable to create {:?} in {:?}", &args.output, current_dir);
+            eprintln!("unable to create {:?} in {:?}", &args.output, current_dir);
         }
         exit(1);
     }
