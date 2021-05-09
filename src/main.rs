@@ -76,7 +76,7 @@ struct Cli {
     // todo: add recursive mode
 }
 
-fn process_dir(dir: &Path, file: &mut LineWriter<File>) {
+fn process_dir<W: Write>(dir: &Path, file: &mut LineWriter<W>) {
     println!("finding images in {:?}", &dir);
     for image in images(&dir) {
         file.write_all(&image.as_os_str().to_string_lossy().as_bytes())
@@ -102,7 +102,7 @@ fn main() {
             }
         }
     } else {
-        println!("unable to create {}", args.output);
+        println!("unable to create output file {}", args.output);
         exit(1);
     }
 }
