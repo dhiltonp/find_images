@@ -2,6 +2,7 @@ use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use std::env::current_dir;
 use std::fs::{canonicalize, File};
 use std::io::{LineWriter, Write};
 use std::process::exit;
@@ -91,18 +92,22 @@ fn process_dir<W: Write>(dir: &Path, file: &mut LineWriter<W>) {
 
 fn main() {
     let args = Cli::from_args();
-    println!("{:?}", &args.output);
     if let Ok(file) = File::create(&args.output) {
+        if let Ok(current_dir) = current_dir() {
+            println!("writing output to {:?} in {:?}", &args.output, current_dir);
+        }
         let mut file = LineWriter::new(file);
         for dir in args.dirs {
             if let Ok(dir) = canonicalize(&dir) {
                 process_dir(&dir, &mut file);
             } else {
-                println!("{:?} does not exist?", &dir)
+                println!("{:?} does not exist?", &dir);
             }
         }
     } else {
-        println!("unable to create output file {}", args.output);
+        if let Ok(current_dir) = current_dir() {
+            println!("unable to create {:?} in {:?}", &args.output, current_dir);
+        }
         exit(1);
     }
 }
