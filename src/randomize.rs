@@ -1,6 +1,7 @@
 use std::env::current_dir;
 use std::fs::File;
 use std::io::{BufRead, BufReader, LineWriter, Write};
+use std::path::{Path, PathBuf};
 use std::process::exit;
 
 use rand::seq::SliceRandom;
@@ -9,14 +10,11 @@ use structopt::StructOpt;
 
 #[derive(StructOpt)]
 struct Cli {
-    #[structopt(short, long, default_value = "images.txt")]
-    output: String,
-
-    #[structopt(short, long, default_value = "images.txt")]
-    input: String,
+    #[structopt(parse(from_os_str))]
+    output: PathBuf,
 }
 
-fn slurp(input: &str) -> Vec<String> {
+fn slurp(input: &Path) -> Vec<String> {
     if let Ok(file) = File::open(&input) {
         let mut retval = Vec::new();
 
@@ -34,7 +32,7 @@ fn slurp(input: &str) -> Vec<String> {
     }
 }
 
-fn write(output: &str, lines: Vec<String>) {
+fn write(output: &Path, lines: Vec<String>) {
     if let Ok(file) = File::create(&output) {
         if let Ok(current_dir) = current_dir() {
             eprintln!("writing output to {:?} in {:?}", &output, current_dir);
@@ -56,7 +54,7 @@ fn write(output: &str, lines: Vec<String>) {
 fn main() {
     let args = Cli::from_args();
 
-    let mut lines = slurp(&args.input);
+    let mut lines = slurp(&args.output);
     lines.shuffle(&mut thread_rng());
     write(&args.output, lines);
 }

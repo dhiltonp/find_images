@@ -79,13 +79,13 @@ struct Cli {
 
 fn process_dir<W: Write>(dir: &Path, file: &mut LineWriter<W>) {
     println!("finding images in {:?}", &dir);
-    for image in images(&dir) {
-        file.write_all(&image.as_os_str().to_string_lossy().as_bytes())
+    for image in images(dir) {
+        file.write_all(image.as_os_str().to_string_lossy().as_bytes())
             .expect("unable to write file, aborting!");
         file.write_all(b"\r\n")
             .expect("unable to write file, aborting!");
     }
-    for subdir in subdirs(&dir) {
+    for subdir in subdirs(dir) {
         process_dir(&subdir, file);
     }
 }
